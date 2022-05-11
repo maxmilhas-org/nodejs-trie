@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.0.0...v1.0.1) (2022-05-11)
+
+
+### Bug Fixes
+
+* removing unneeded pipeline from push master and preparing publishin ([#2](https://github.com/maxmilhas-org/nodejs-trie/issues/2)) ([b4ced96](https://github.com/maxmilhas-org/nodejs-trie/commit/b4ced96bdfe2921b254092d8e35f1e72a18c4031))
+
 # 1.0.0 (2022-05-11)
 
 
