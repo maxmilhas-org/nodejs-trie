@@ -7,7 +7,7 @@ module.exports = {
   overrides: [{
     files: ['test/*.ts', 'test/**/*.ts'],
     rules: {
-      'no-magic-numbers': 'off',
+      '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
@@ -77,10 +77,12 @@ module.exports = {
     'no-fallthrough': 'error',
     'no-invalid-regexp': 'error',
     'no-invalid-this': 'off',
-    'no-magic-numbers': [
+    'no-magic-numbers': 'off',
+    '@typescript-eslint/no-magic-numbers': [
       'error',
       {
         ignore: [0, 1, -1],
+        ignoreEnums: true
       },
     ],
     'no-multiple-empty-lines': [
