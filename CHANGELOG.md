@@ -1,3 +1,10 @@
+# 1.0.0 (2022-05-11)
+
+
+### Features
+
+* first version ([#1](https://github.com/maxmilhas-org/nodejs-trie/issues/1)) ([726a595](https://github.com/maxmilhas-org/nodejs-trie/commit/726a595986cd53f969f7d0135f7dc4b60480d25c))
+
 # Changelog
   All notable changes to this project will be documented in this file.
 
