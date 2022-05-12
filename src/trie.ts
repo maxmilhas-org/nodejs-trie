@@ -35,6 +35,23 @@ function getLastPerfectMatch(
 	}
 }
 
+function selfReferenceSynonyms(
+	synonymTrie: ProcessedSynonyms | undefined,
+	char: string,
+	current: Trie,
+) {
+	if (synonymTrie) {
+		const synonyms = synonymTrie[1].get(char);
+		if (synonyms) {
+			synonyms.forEach((synonym) => {
+				if (synonym !== char) {
+					current[synonym as Letter] = char;
+				}
+			});
+		}
+	}
+}
+
 export function addWord(trie: Trie, word: string) {
 	let current = trie;
 	const context = { i: 0, char: '' };
@@ -46,23 +63,12 @@ export function addWord(trie: Trie, word: string) {
 		const { char } = context;
 		let node = current[char as Letter];
 		if (!node) {
-			if (!node) {
-				node = current[char as Letter] = {};
-				if (synonymTrie) {
-					const synonyms = synonymTrie[1].get(char);
-					if (synonyms) {
-						synonyms.forEach((synonym) => {
-							if (synonym !== char) {
-								current[synonym as Letter] = char;
-							}
-						});
-					}
-				}
-			}
+			node = current[char as Letter] = {};
+			selfReferenceSynonyms(synonymTrie, char, current);
 		} else if (typeof node === 'string') {
 			node = current[node as Letter] as Trie;
 		}
-		current = node as Trie;
+		current = node;
 	}
 	current.$word = true;
 }
