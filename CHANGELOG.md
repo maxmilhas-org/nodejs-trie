@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.0.1...v1.1.0) (2022-05-12)
+
+
+### Features
+
+* implementing trie to regexp conversion ([#3](https://github.com/maxmilhas-org/nodejs-trie/issues/3)) ([b99cf3f](https://github.com/maxmilhas-org/nodejs-trie/commit/b99cf3f067b7283c8f4834820c1d038febcfcdb7))
+
 ## [1.0.1](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.0.0...v1.0.1) (2022-05-11)
 
 
