@@ -53,7 +53,6 @@ You can also compile regular expressions from a Trie! There are three flavors fo
 * Partial match regular expression:
 You can generate a regular expression that test returns true when there is a partial match with the Trie. This regular expression will have a performance slightly higher than the arrTrie
 
-
 ## RegEx conversion
 
 ```ts
