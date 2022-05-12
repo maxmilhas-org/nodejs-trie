@@ -1,6 +1,22 @@
-import { createTrie, trieToRegExPartial } from '../../src';
+import { createTrie, processCharSynonyms, trieToRegExPartial } from '../../src';
 
 describe('trie', () => {
+	it('should thrown an error when trying to convert a trie with synonyms', () => {
+		const trie = createTrie(
+			['testing', 'taste', 'thirsty'],
+			processCharSynonyms([['t', 'th']]),
+		);
+		let error: any;
+
+		try {
+			trieToRegExPartial(trie);
+		} catch (err) {
+			error = err;
+		}
+
+		expect(error).toBeInstanceOf(TypeError);
+	});
+
 	it('should return false when there is no matching string', () => {
 		const trie = createTrie(['testing', 'taste', 'thirsty']);
 		const trieRegEx = trieToRegExPartial(trie);
