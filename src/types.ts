@@ -38,3 +38,6 @@ export enum MatchType {
 	PARTIAL = 1,
 	PERFECT = 2,
 }
+export type TrieRegExp = RegExp & {
+	match(text: string): MatchType;
+};

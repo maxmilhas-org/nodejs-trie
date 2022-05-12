@@ -4,6 +4,9 @@ import {
 	createTrie,
 	matchesArrTrie,
 	matchesTrie,
+	trieToRegEx,
+	trieToRegExPartial,
+	trieToRegExPerfect,
 } from '../../src';
 
 const suite = new Benchmark.Suite();
@@ -63,6 +66,9 @@ const wordList = [
 it('benchmark results', () => {
 	const trie = createTrie(wordList);
 	const arrTrie = createArrTrie(wordList);
+	const regExTrie = trieToRegEx(trie);
+	const regExTriePartial = trieToRegExPartial(trie);
+	const regExTriePerfect = trieToRegExPerfect(trie);
 	const last = wordList[wordList.length - 1];
 	const notFound = 'creed';
 	let log = '';
@@ -81,6 +87,15 @@ it('benchmark results', () => {
 		.add('arrTrie search (not found)', () => {
 			matchesArrTrie(notFound, arrTrie);
 		})
+		.add('regExTrie search (not found)', () => {
+			regExTrie.match(notFound);
+		})
+		.add('regExTriePartial search (not found)', () => {
+			regExTriePartial.test(notFound);
+		})
+		.add('regExTriePerfect search (not found)', () => {
+			regExTriePerfect.test(notFound);
+		})
 		.add('array search (found)', () => {
 			wordList.find((x) => x.startsWith(last));
 		})
@@ -93,6 +108,15 @@ it('benchmark results', () => {
 		})
 		.add('arrTrie search (found)', () => {
 			matchesArrTrie(last, arrTrie);
+		})
+		.add('regExTrie search (found)', () => {
+			regExTrie.match(last);
+		})
+		.add('regExTriePartial search (found)', () => {
+			regExTriePartial.test(last);
+		})
+		.add('regExTriePerfect search (found)', () => {
+			regExTriePerfect.test(last);
 		})
 		.on('cycle', function (event: any) {
 			log += `${event.target}\n`;
