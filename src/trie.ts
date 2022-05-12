@@ -8,38 +8,42 @@ import {
 
 const RESERVED_WORDS = new Set(['$word', '$synonymTrie']);
 
-function getLastPerfectMatch(trie: Trie, word: string, startIndex: number) {
-	let current = trie;
-	let lastIndex = startIndex;
-	const { length } = word;
+function getLastPerfectMatch(
+	processedSynonyms: ProcessedSynonyms | undefined,
+	word: string,
+	context: { i: number; char: string },
+) {
+	if (processedSynonyms) {
+		const [trie] = processedSynonyms;
+		let current = trie;
+		let lastIndex = context.i;
+		const { length } = word;
 
-	for (let i = startIndex; i < length; i++) {
-		current = current[word[i] as Letter] as Trie;
-		if (!current) {
-			break;
-		} else if (current.$word) {
-			lastIndex = i + 1;
+		for (let i = context.i; i < length; i++) {
+			current = current[word[i] as Letter] as Trie;
+			if (!current) {
+				break;
+			} else if (current.$word) {
+				lastIndex = i + 1;
+			}
 		}
-	}
 
-	if (startIndex !== lastIndex) {
-		return word.substring(startIndex, lastIndex);
+		if (context.i !== lastIndex) {
+			context.char = word.substring(context.i, lastIndex);
+			context.i += context.char.length - 1;
+		}
 	}
 }
 
 export function addWord(trie: Trie, word: string) {
 	let current = trie;
+	const context = { i: 0, char: '' };
 	const synonymTrie = trie.$synonymTrie;
 
-	for (let i = 0; i < word.length; i++) {
-		let char = word[i];
-		if (synonymTrie) {
-			const perfectMatch = getLastPerfectMatch(synonymTrie[0], word, i);
-			if (perfectMatch) {
-				i += perfectMatch.length - 1;
-				char = perfectMatch;
-			}
-		}
+	for (; context.i < word.length; context.i++) {
+		context.char = word[context.i];
+		getLastPerfectMatch(synonymTrie, word, context);
+		const { char } = context;
 		let node = current[char as Letter];
 		if (!node) {
 			if (!node) {
@@ -109,18 +113,14 @@ export function processCharSynonyms(
 export function matchesTrie(word: string, trie: Trie) {
 	let current = trie;
 	const { length } = word;
+	const context = { i: 0, char: '' };
 	const synonymTrie = trie.$synonymTrie;
 
-	for (let i = 0; i < length; i++) {
-		let char = word[i];
-		if (synonymTrie) {
-			const perfectMatch = getLastPerfectMatch(synonymTrie[0], word, i);
-			if (perfectMatch) {
-				i += perfectMatch.length - 1;
-				char = perfectMatch;
-			}
-		}
-		const nextNode = current[char as Letter];
+	for (; context.i < length; context.i++) {
+		context.char = word[context.i];
+		getLastPerfectMatch(synonymTrie, word, context);
+
+		const nextNode = current[context.char as Letter];
 		if (nextNode) {
 			current =
 				typeof nextNode === 'string'
