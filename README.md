@@ -48,6 +48,28 @@ MatchType.COMPLETE // Complete match
 
 That's it! Simple enough, isn't it?
 
+You can also compile regular expressions from a Trie! There are three flavors for that:
+
+* Partial match regular expression:
+You can generate a regular expression that test returns true when there is a partial match with the Trie. This regular expression will have a performance slightly higher than the arrTrie
+
+```ts
+const regex = trieToRegExPartial(trie);
+```
+
+* Perfect match regular expression:
+You can generate a regular expression that test returns true when there is a perfect match with the Trie. This regular expression will have a performance significantly higher than the arrTrie
+
+```ts
+const regex = trieToRegExPerfect(trie);
+```
+
+* Full Trie match regular expression:
+You can generate a TrieRegexp, which will have a new method, **match**, that returns **MatchType.PERFECT** for a perfect match, **MatchType.PARTIAL** for a partial match, or **MatchType.NONE** for no match! This TrieRegExp between the trie and arrTrie, but almost as good the arrTrie when no match is found, and slightly higher than the normal Trie, when a match occurs!
+
+```ts
+const regex = trieToRegEx(trie);
+```
 
 ## License
 
