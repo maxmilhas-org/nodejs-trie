@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.1.0...v1.2.0) (2022-05-12)
+
+
+### Features
+
+* implementing support for char synonyms arrays ([#4](https://github.com/maxmilhas-org/nodejs-trie/issues/4)) ([627c5d5](https://github.com/maxmilhas-org/nodejs-trie/commit/627c5d51b39258e1bd1b1d6f82641de1b0f4fcb0))
+
 # [1.1.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.0.1...v1.1.0) (2022-05-12)
 
 
