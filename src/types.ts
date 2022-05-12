@@ -25,10 +25,14 @@ export type Letter =
 	| 'x'
 	| 'y'
 	| 'z';
+
+export type ProcessedSynonyms = [Trie, Map<string, string[]>];
+
 export type Trie = {
-	[k in Letter]?: Trie;
+	[k in Letter]?: Trie | string;
 } & {
-	word?: boolean;
+	$word?: boolean;
+	$synonymTrie?: ProcessedSynonyms;
 };
 export interface ArrayTrie extends Array<ArrayTrie | undefined> {
 	word?: boolean;

@@ -53,6 +53,8 @@ You can also compile regular expressions from a Trie! There are three flavors fo
 * Partial match regular expression:
 You can generate a regular expression that test returns true when there is a partial match with the Trie. This regular expression will have a performance slightly higher than the arrTrie
 
+## RegEx conversion
+
 ```ts
 const regex = trieToRegExPartial(trie);
 ```
@@ -70,6 +72,36 @@ You can generate a TrieRegexp, which will have a new method, **match**, that ret
 ```ts
 const regex = trieToRegEx(trie);
 ```
+
+## Char Synonyms
+
+The char synonyms feature allow you to inform an array of list of synonyms to this package, and it's used to create self referencing keys that will allow even unknown strings to match. This is useful to abstract possible user misspellings.
+
+To use that feature, first, you need to process the char synonyms, like that:
+
+```ts
+const processedSynonyms = processCharSynonyms([
+  ['x', 'ch', 'sh'],
+  ['y', 'i'],
+  ['s', 'ss', 'z'],
+]);
+```
+
+Then, you can inform it to **createTrie** (for now, only createTrie supports char synonyms):
+
+```ts
+const trie = createTrie(['sand', 'chore', 'passport'], processedSynonyms);
+```
+
+Now, the following strings will match:
+
+```ts
+matchesTrie('shand', trie) // MatchType.PERFECT
+matchesTrie('core', trie) // MatchType.PERFECT
+matchesTrie('paspor', trie) // MatchType.PARTIAL
+```
+
+Tries created with synonyms, for now, can't be converted to regex.
 
 ## License
 
