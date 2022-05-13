@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.3.0...v1.3.1) (2022-05-13)
+
+
+### Bug Fixes
+
+* fixing Reserved Words list ([#7](https://github.com/maxmilhas-org/nodejs-trie/issues/7)) ([faefceb](https://github.com/maxmilhas-org/nodejs-trie/commit/faefceb435d376687da7ba91eec4d69202540d3f))
+
 # [1.3.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.2.0...v1.3.0) (2022-05-13)
 
 
