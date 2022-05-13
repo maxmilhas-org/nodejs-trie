@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.2.0...v1.3.0) (2022-05-13)
+
+
+### Features
+
+* adding value capabilities to Trie (TrieMap) ([#6](https://github.com/maxmilhas-org/nodejs-trie/issues/6)) ([0fcb8c6](https://github.com/maxmilhas-org/nodejs-trie/commit/0fcb8c602b7e9064ce22d31f45a724bbabb18046))
+
 # [1.2.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.1.0...v1.2.0) (2022-05-12)
 
 
