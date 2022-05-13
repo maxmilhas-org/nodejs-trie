@@ -26,14 +26,20 @@ export type Letter =
 	| 'y'
 	| 'z';
 
+export enum ReservedWords {
+	$word = '$word',
+	$synonymTrie = '$synonymTrie',
+	$values = '$values',
+}
+
 export type ProcessedSynonyms = [Trie, Map<string, string[]>];
 
 export type Trie<TValue = unknown> = {
 	[k in Letter]?: Trie<TValue> | string;
 } & {
-	$word?: string;
-	$synonymTrie?: ProcessedSynonyms;
-	$values?: TValue[];
+	[ReservedWords.$word]?: string;
+	[ReservedWords.$synonymTrie]?: ProcessedSynonyms;
+	[ReservedWords.$values]?: TValue[];
 };
 
 export interface IteratedTrieValue<TValue> {

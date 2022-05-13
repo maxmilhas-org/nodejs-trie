@@ -1,3 +1,4 @@
+const matchers = require('jest-extended/all');
 import 'jest-extended';
 import 'jest-callslike';
 
@@ -5,6 +6,7 @@ afterEach(() => {
 	jest.restoreAllMocks();
 	jest.clearAllMocks();
 });
+expect.extend(matchers);
 
 declare global {
 	function getNames<T extends object>(c: { prototype: T }): T;

@@ -62,6 +62,7 @@ const wordList = [
 	'fabricate',
 	'creep',
 ];
+const EXPECTED_IMPROVEMENT_FACTOR = 5;
 
 it('benchmark results', () => {
 	const trie = createTrie(wordList);
@@ -71,7 +72,9 @@ it('benchmark results', () => {
 	const regExTriePerfect = trieToRegExPerfect(trie);
 	const last = wordList[wordList.length - 1];
 	const notFound = 'creed';
+	let trieCount = 0;
 	let log = '';
+	const totals: [number, string][] = [];
 
 	suite
 		.add('array search (not found)', () => {
@@ -81,7 +84,7 @@ it('benchmark results', () => {
 			const regex = new RegExp(`\\b${notFound}`);
 			wordList.find((x) => regex.test(x));
 		})
-		.add('trie search (not found)', () => {
+		.add('Trie search (not found)', () => {
 			matchesTrie(notFound, trie);
 		})
 		.add('arrTrie search (not found)', () => {
@@ -103,7 +106,7 @@ it('benchmark results', () => {
 			const regex = new RegExp(`\\b${last}`);
 			wordList.find((x) => regex.test(x));
 		})
-		.add('trie search (found)', () => {
+		.add('Trie search (found)', () => {
 			matchesTrie(last, trie);
 		})
 		.add('arrTrie search (found)', () => {
@@ -120,9 +123,21 @@ it('benchmark results', () => {
 		})
 		.on('cycle', function (event: any) {
 			log += `${event.target}\n`;
+			totals.push([event.target.hz, event.target.name]);
+			if (event.target.name.includes('Trie')) {
+				trieCount++;
+			}
 		})
 		.on('complete', () => {
 			console.log(log);
+			totals.sort(([a], [b]) => b - a);
+			let i = 0;
+			for (; i < trieCount; i++) {
+				expect(totals[i][1]).toInclude('Trie');
+			}
+			expect(totals[i - 1][0]).toBeGreaterThanOrEqual(
+				totals[i][0] * EXPECTED_IMPROVEMENT_FACTOR,
+			);
 		})
 		.on('error', (err: any) => {
 			console.log(err);

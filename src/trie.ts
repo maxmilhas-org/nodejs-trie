@@ -5,9 +5,15 @@ import {
 	TrieRegExp,
 	ProcessedSynonyms,
 	IteratedTrieValue,
+	ReservedWords,
 } from './types';
 
-const RESERVED_WORDS = new Set(['$word', '$synonymTrie', '$value']);
+const RESERVED_WORDS = new Set<string>();
+for (const key in ReservedWords) {
+	if (ReservedWords.hasOwnProperty(key)) {
+		RESERVED_WORDS.add(key);
+	}
+}
 
 function getLastPerfectMatch(
 	processedSynonyms: ProcessedSynonyms | undefined,
