@@ -103,6 +103,36 @@ matchesTrie('paspor', trie) // MatchType.PARTIAL
 
 Tries created with synonyms, for now, can't be converted to regex.
 
+## TrieMap
+
+A **TrieMap** is a fast way to find multiple values using a prefix search. You can use it to organize any list of values you want, indexing them by one or many strings, and then just retrieve an iterable with all the occurrences, like that:
+
+```ts
+const trie = createTrieMap([
+  ['testing', 1],
+  ['taste', 2],
+  ['thirsty', 3],
+  ['tester', 4],
+  ['test', 5],
+  ['taste', 6],
+  ['thirsty', 7],
+  ['testing', 5],
+]);
+
+for (const item of iterateTrieValues(trie, 'tes')) {
+  console.log(item);
+}
+/*
+Result: will print in some arbitrary order
+{ proximity: 4, word: 'testing', value: 1 },
+{ proximity: 3, word: 'tester', value: 4 },
+{ proximity: 1, word: 'test', value: 5 },
+{ proximity: 4, word: 'testing', value: 5 },
+*/
+```
+
+Notice that **IterateTrieValues** will yield even repeated values. If you want uniqueness, it's up to you to treat the data as you need.
+
 ## License
 
 Licensed under [MIT](https://en.wikipedia.org/wiki/MIT_License).

@@ -28,20 +28,30 @@ export type Letter =
 
 export type ProcessedSynonyms = [Trie, Map<string, string[]>];
 
-export type Trie = {
-	[k in Letter]?: Trie | string;
+export type Trie<TValue = unknown> = {
+	[k in Letter]?: Trie<TValue> | string;
 } & {
-	$word?: boolean;
+	$word?: string;
 	$synonymTrie?: ProcessedSynonyms;
+	$values?: TValue[];
 };
+
+export interface IteratedTrieValue<TValue> {
+	proximity: number;
+	word: string;
+	value: TValue;
+}
+
 export interface ArrayTrie extends Array<ArrayTrie | undefined> {
 	word?: boolean;
 }
+
 export enum MatchType {
 	NONE = 0,
 	PARTIAL = 1,
 	PERFECT = 2,
 }
+
 export type TrieRegExp = RegExp & {
 	match(text: string): MatchType;
 };
