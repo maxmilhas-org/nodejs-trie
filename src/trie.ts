@@ -1,7 +1,7 @@
-import { Trie, MatchType, ProcessedSynonyms } from './types';
+import { Trie, MatchType, TrieParameters, TrieOptions } from './types';
 
 function getLastPerfectMatch(
-	processedSynonyms: ProcessedSynonyms | undefined,
+	processedSynonyms: TrieParameters | undefined,
 	word: string,
 	context: { i: number; char: string },
 ) {
@@ -28,7 +28,7 @@ function getLastPerfectMatch(
 }
 
 function selfReferenceSynonyms(
-	synonymTrie: ProcessedSynonyms | undefined,
+	synonymTrie: TrieParameters | undefined,
 	char: string,
 	current: Trie,
 ) {
@@ -75,14 +75,14 @@ export function addWord(trie: Trie, word: string, value?: unknown) {
 }
 
 export function createEmptyTrie<TValue = never>(
-	synonymTrie?: [Trie, Map<string, string[]>],
+	synonymTrie?: TrieParameters,
 ): Trie<TValue> {
 	return { s: synonymTrie, c: {} };
 }
 
 export function createTrie(
 	list: Iterable<string>,
-	synonymTrie?: [Trie, Map<string, string[]>],
+	synonymTrie?: TrieParameters,
 ) {
 	const trie = createEmptyTrie(synonymTrie);
 
@@ -95,7 +95,7 @@ export function createTrie(
 
 export function createTrieMap<TValue>(
 	list: Iterable<[string, TValue]>,
-	synonymTrie?: [Trie, Map<string, string[]>],
+	synonymTrie?: TrieParameters,
 ) {
 	const trie = createEmptyTrie<TValue>(synonymTrie);
 
@@ -131,7 +131,8 @@ export function getSubTrie<TValue>(word: string, trie: Trie<TValue>) {
 
 export function processCharSynonyms(
 	synonymChars: string[][],
-): ProcessedSynonyms {
+	options?: TrieOptions,
+): TrieParameters {
 	const set = new Set<string>();
 	const trie = createEmptyTrie();
 	const synonymMap = new Map<string, string[]>();
@@ -147,7 +148,7 @@ export function processCharSynonyms(
 		}
 	}
 
-	return [trie, synonymMap];
+	return [trie, synonymMap, options, 0];
 }
 
 export function matchesTrie<TValue>(word: string, trie: Trie<TValue>) {

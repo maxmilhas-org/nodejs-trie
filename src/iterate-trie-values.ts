@@ -1,8 +1,12 @@
 import { Queue, ShouldYield, IdItem, getQueue } from './utils';
 import { addWord, createEmptyTrie, createTrie } from './trie';
 import { IteratedTrieValue, IteratingOptions, Trie } from './types';
+import { getStringList } from './get-string-list';
+import { getTransformString } from './get-transform-string';
 
 const YIELDS_TRUE = { yields: true, id: undefined };
+const INSENSITIVE_TRIE = 3;
+const TRIE_OPTIONS = 2;
 const ALWAYS_YIELDS = () => YIELDS_TRUE;
 
 function pushToStack<TValue>(
@@ -63,6 +67,16 @@ function treatOptions<TValue>(
 	return { prefixes, uniqueness, getId: getId || identity };
 }
 
+function getPrefixList<TValue>(
+	trie: Trie<TValue>,
+	prefixOrPrefix: string,
+): Iterable<string> {
+	const arr = [prefixOrPrefix];
+	return trie.s?.[INSENSITIVE_TRIE]
+		? getStringList(arr, getTransformString(trie.s[TRIE_OPTIONS]))
+		: arr;
+}
+
 function validateIterationParameters<TValue>(
 	prefixOrPrefix: string | IteratingOptions<TValue> | undefined,
 	trie: Trie<TValue>,
@@ -72,7 +86,7 @@ function validateIterationParameters<TValue>(
 		if (typeof prefixOrPrefix === 'object') {
 			return treatOptions(prefixOrPrefix, trie);
 		}
-		prefixes = createTrie([prefixOrPrefix], trie.s);
+		prefixes = createTrie(getPrefixList<TValue>(trie, prefixOrPrefix), trie.s);
 	}
 
 	return { prefixes, uniqueness: false, getId: identity };

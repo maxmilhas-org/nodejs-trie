@@ -188,6 +188,27 @@ Result: will print in some arbitrary order
 { proximity: 2, value: 4 },
 */
 ```
+## Fast Object LookUp
+
+Onb of the most practical use you can have with this package is to give a list of objects, to get a TrieMap:
+
+```ts
+const trie = objectListToTrie(myList);
+```
+
+This trie indexes all the object in the list by each word, letting you iterate over it to find just the objects you need.
+The object is also fully serializable as long as the list contains only serializable objects too.
+You can specify some options to minimize the size of your Trie, like this:
+
+```ts
+const trie = objectListToTrie(myList, {
+  minSize: 4, //Will only include in the Trie words with 4 or more characters,
+  forbiddenWords: ['something', 'denied'], //Will Ignore that words when filling up the Trie
+});
+```
+
+Tries generated with that method are case insensitive and accent insensitive too, and any non alphanumeric character is ignored.
+Given that, the searches you do over that Trie will also follow that same rules,
 
 ## License
 
