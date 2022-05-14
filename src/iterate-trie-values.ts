@@ -1,25 +1,6 @@
+import { Queue, ShouldYield, IdItem, getQueue } from './utils';
 import { addWord, createEmptyTrie, createTrie } from './trie';
 import { IteratedTrieValue, IteratingOptions, Trie } from './types';
-
-type IdItem<TValue> = IteratedTrieValue<TValue> & {
-	id: unknown;
-	count: number;
-};
-type QueueNode<T> =
-	| {
-			value: T;
-			next?: QueueNode<T>;
-	  }
-	| undefined;
-type Queue<T> = {
-	push(item: T): void;
-	shift(): T | undefined;
-	hasItems(): unknown;
-};
-type ShouldYield = (v: unknown) => {
-	yields: boolean;
-	id: unknown;
-};
 
 const YIELDS_TRUE = { yields: true, id: undefined };
 const ALWAYS_YIELDS = () => YIELDS_TRUE;
@@ -93,34 +74,6 @@ function validateIterationParameters<TValue>(
 	}
 
 	return { prefixes, uniqueness: false, getId: identity };
-}
-
-function getQueue<T>(): Queue<T> {
-	let first: QueueNode<T> | undefined;
-	let last: QueueNode<T> | undefined;
-	return {
-		hasItems() {
-			return first;
-		},
-		shift() {
-			if (first) {
-				const { value } = first;
-				first = first.next;
-				if (!first) {
-					last = first;
-				}
-				return value;
-			}
-		},
-		push(value: T) {
-			const node = { value };
-			if (!last) {
-				first = last = node;
-			} else {
-				last = last.next = node;
-			}
-		},
-	};
 }
 
 function shouldYieldFactory(

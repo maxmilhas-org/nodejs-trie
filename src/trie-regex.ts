@@ -21,31 +21,25 @@ function trieToRegExRecursive(trie: Trie, matchType: MatchType) {
 	return exp !== '' ? `(?:${exp}${getEnd(matchType)})` : '';
 }
 
-function validateRegEx(trie: Trie) {
+function getRegEx(trie: Trie<unknown>, matchType: MatchType) {
 	if (trie.$synonymTrie) {
 		throw new TypeError('TrieRegEx does not support tries with synonyms yet');
 	}
+
+	const exp = `^${trieToRegExRecursive(trie, matchType)}`;
+	return new RegExp(exp);
 }
 
 export function trieToRegExPartial(trie: Trie) {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.PARTIAL)}`;
-	return new RegExp(exp);
+	return getRegEx(trie, MatchType.PARTIAL);
 }
 
 export function trieToRegExPerfect(trie: Trie) {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.PERFECT)}`;
-	return new RegExp(exp);
+	return getRegEx(trie, MatchType.PERFECT);
 }
 
 export function trieToRegEx(trie: Trie): TrieRegExp {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.NONE)}`;
-	const regex = new RegExp(exp) as TrieRegExp;
+	const regex = getRegEx(trie, MatchType.NONE) as TrieRegExp;
 
 	regex.match = (text: string) => {
 		const result = regex.exec(`${text}\n`);
