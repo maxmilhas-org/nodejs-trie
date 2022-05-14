@@ -56,7 +56,8 @@ export function addWord(trie: Trie, word: string, value?: unknown) {
 		const { sub } = current;
 		let node = sub.get(char);
 		if (!node) {
-			sub.set(char, (node = { sub: new Map() }));
+			node = { sub: new Map() };
+			sub.set(char, node);
 			selfReferenceSynonyms(synonymTrie, char, current);
 		} else if (typeof node === 'string') {
 			node = sub.get(node) as Trie;
