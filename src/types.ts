@@ -1,10 +1,10 @@
 export type ProcessedSynonyms = [Trie, Map<string, string[]>];
 
 export interface Trie<TValue = unknown> {
-	sub: Map<string, Trie<TValue> | string>;
-	$word?: string;
-	$synonymTrie?: ProcessedSynonyms;
-	$values?: TValue[];
+	c: Record<string, Trie<TValue> | string | undefined>;
+	w?: 1;
+	s?: ProcessedSynonyms;
+	v?: TValue[];
 }
 
 export interface IteratingOptions<TValue> {

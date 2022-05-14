@@ -12,10 +12,10 @@ function getLastPerfectMatch(
 		const { length } = word;
 
 		for (let i = context.i; i < length; i++) {
-			current = current.sub.get(word[i]) as Trie;
+			current = current.c[word[i]] as Trie;
 			if (!current) {
 				break;
-			} else if (current.$word) {
+			} else if (current.w) {
 				lastIndex = i + 1;
 			}
 		}
@@ -37,7 +37,7 @@ function selfReferenceSynonyms(
 		if (synonyms) {
 			synonyms.forEach((synonym) => {
 				if (synonym !== char) {
-					current.sub.set(synonym, char);
+					current.c[synonym] = char;
 				}
 			});
 		}
@@ -47,37 +47,37 @@ function selfReferenceSynonyms(
 export function addWord(trie: Trie, word: string, value?: unknown) {
 	let current = trie;
 	const context = { i: 0, char: '' };
-	const synonymTrie = trie.$synonymTrie;
+	const synonymTrie = trie.s;
 
 	while (context.i < word.length) {
 		context.char = word[context.i];
 		getLastPerfectMatch(synonymTrie, word, context);
 		const { char } = context;
-		const { sub } = current;
-		let node = sub.get(char);
+		const { c: sub } = current;
+		let node = sub[char];
 		if (!node) {
-			node = { sub: new Map() };
-			sub.set(char, node);
+			node = { c: {} };
+			sub[char] = node;
 			selfReferenceSynonyms(synonymTrie, char, current);
 		} else if (typeof node === 'string') {
-			node = sub.get(node) as Trie;
+			node = sub[node] as Trie;
 		}
 		current = node;
 		context.i++;
 	}
-	current.$word = word;
+	current.w = 1;
 	if (value !== undefined) {
-		if (!current.$values) {
-			current.$values = [];
+		if (!current.v) {
+			current.v = [];
 		}
-		current.$values.push(value);
+		current.v.push(value);
 	}
 }
 
 export function createEmptyTrie<TValue = never>(
 	synonymTrie?: [Trie, Map<string, string[]>],
 ): Trie<TValue> {
-	return { $synonymTrie: synonymTrie, sub: new Map() };
+	return { s: synonymTrie, c: {} };
 }
 
 export function createTrie(
@@ -110,18 +110,18 @@ export function getSubTrie<TValue>(word: string, trie: Trie<TValue>) {
 	let current = trie;
 	const { length } = word;
 	const context = { i: 0, char: '' };
-	const synonymTrie = trie.$synonymTrie;
+	const synonymTrie = trie.s;
 
 	while (context.i < length) {
 		context.char = word[context.i];
 		getLastPerfectMatch(synonymTrie, word, context);
 
-		const nextNode = current.sub.get(context.char);
+		const nextNode = current.c[context.char];
 		if (!nextNode) return undefined;
 
 		current =
 			typeof nextNode === 'string'
-				? (current.sub.get(nextNode) as Trie<TValue>)
+				? (current.c[nextNode] as Trie<TValue>)
 				: nextNode;
 		context.i++;
 	}
@@ -154,5 +154,5 @@ export function matchesTrie<TValue>(word: string, trie: Trie<TValue>) {
 	const result = getSubTrie(word, trie);
 	if (!result) return MatchType.NONE;
 
-	return result.$word ? MatchType.PERFECT : MatchType.PARTIAL;
+	return result.w ? MatchType.PERFECT : MatchType.PARTIAL;
 }

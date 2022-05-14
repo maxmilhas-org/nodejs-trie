@@ -11,7 +11,9 @@ function pushToStack<TValue>(
 	stack: Queue<[Trie<TValue>, number]>,
 	proximity: number,
 ) {
-	for (const [, value] of current.sub) {
+	const { c: sub } = current;
+	for (const k in current.c) {
+		const value = sub[k]!;
 		if (typeof value !== 'string' && !visited.has(value)) {
 			visited.add(current);
 			stack.push([value, proximity]);
@@ -27,7 +29,7 @@ function getPrefixTrie(
 	if (prefixes === undefined) {
 		return [undefined, 0];
 	}
-	const trie = createEmptyTrie(dataTrie.$synonymTrie);
+	const trie = createEmptyTrie(dataTrie.s);
 	if (typeof prefixes === 'string') {
 		prefixes = [prefixes];
 	}
@@ -70,7 +72,7 @@ function validateIterationParameters<TValue>(
 		if (typeof prefixOrPrefix === 'object') {
 			return treatOptions(prefixOrPrefix, trie);
 		}
-		prefixes = createTrie([prefixOrPrefix], trie.$synonymTrie);
+		prefixes = createTrie([prefixOrPrefix], trie.s);
 	}
 
 	return { prefixes, uniqueness: false, getId: identity };
@@ -121,8 +123,8 @@ function* runIteration<TValue>(
 
 	while (queue.hasItems()) {
 		const [current, proximity] = queue.shift()!;
-		const word = current.$word;
-		const values = current.$values;
+		const word = current.w;
+		const values = current.v;
 		if (word && values) {
 			yield* yieldValues(shouldYield, values, proximity);
 		}
@@ -149,9 +151,9 @@ function* combineIterables<TValue>(
 }
 
 function getTrie<TValue>(current: Trie<TValue>, key: string) {
-	const newTrie = current.sub.get(key)!;
+	const newTrie = current.c[key]!;
 	if (typeof newTrie === 'string') {
-		return current.sub.get(newTrie) as Trie<TValue>;
+		return current.c[newTrie] as Trie<TValue>;
 	}
 	return newTrie;
 }
@@ -164,10 +166,10 @@ function* yieldSubTries<TValue>(
 ) {
 	if (keys.length === 1) {
 		const [key] = keys;
-		yield* callback(trie.sub.get(key) as Trie<TValue>, getTrie(prefixes, key));
+		yield* callback(trie.c[key] as Trie<TValue>, getTrie(prefixes, key));
 	} else if (keys.length > 1) {
 		for (const key of keys) {
-			yield* callback(getTrie(trie, key), prefixes.sub.get(key) as Trie);
+			yield* callback(getTrie(trie, key), prefixes.c[key] as Trie);
 		}
 	} else {
 		yield trie;
@@ -179,8 +181,8 @@ function* getFilterSubTries<TValue>(
 	prefixes: Trie,
 ): Iterable<Trie<TValue> | undefined> {
 	const keys = [];
-	for (const k of prefixes.sub.keys()) {
-		const value = trie.sub.get(k);
+	for (const k in prefixes.c) {
+		const value = trie.c[k];
 		if (!value) {
 			yield undefined;
 			return;

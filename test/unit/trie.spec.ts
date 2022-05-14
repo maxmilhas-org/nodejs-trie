@@ -89,82 +89,52 @@ describe('trie', () => {
 			]);
 
 			expect(result[0]).toEqual({
-				$synonymTrie: undefined,
-				sub: new Map([
-					[
-						't',
-						{
-							$word: 't',
-							sub: new Map([
-								[
-									'h',
-									{
-										$word: 'th',
-										sub: new Map(),
-									},
-								],
-							]),
+				s: undefined,
+				c: {
+					t: {
+						w: 1,
+						c: {
+							h: {
+								w: 1,
+								c: {},
+							},
 						},
-					],
-					[
-						'x',
-						{
-							$word: 'x',
-							sub: new Map([
-								[
-									'x',
-									{
-										$word: 'xx',
-										sub: new Map(),
-									},
-								],
-							]),
+					},
+					x: {
+						w: 1,
+						c: {
+							x: {
+								w: 1,
+								c: {},
+							},
 						},
-					],
-					[
-						'j',
-						{
-							$word: 'j',
-							sub: new Map([
-								[
-									'a',
-									{
-										sub: new Map([
-											[
-												's',
-												{
-													sub: new Map([
-														[
-															'p',
-															{
-																sub: new Map([
-																	[
-																		'e',
-																		{
-																			sub: new Map([
-																				[
-																					'r',
-																					{
-																						$word: 'jasper',
-																						sub: new Map(),
-																					},
-																				],
-																			]),
-																		},
-																	],
-																]),
+					},
+					j: {
+						w: 1,
+						c: {
+							a: {
+								c: {
+									s: {
+										c: {
+											p: {
+												c: {
+													e: {
+														c: {
+															r: {
+																w: 1,
+																c: {},
 															},
-														],
-													]),
+														},
+													},
 												},
-											],
-										]),
+											},
+										},
 									},
-								],
-							]),
+								},
+							},
 						},
-					],
-				]),
+					},
+				},
 			});
 			expect(result[1]).toEqual(
 				new Map([

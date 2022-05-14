@@ -58,7 +58,7 @@ module.exports = {
     'default-case': 'error',
     'eol-last': 'error',
     eqeqeq: ['error', 'smart'],
-    'guard-for-in': 'error',
+    'guard-for-in': 'off',
     'id-blacklist': 'error',
     'id-match': 'error',
     'linebreak-style': ['error', 'unix'],

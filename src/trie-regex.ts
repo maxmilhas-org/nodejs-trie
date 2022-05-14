@@ -13,16 +13,17 @@ function getEnd(matchType: MatchType) {
 
 function trieToRegExRecursive(trie: Trie, matchType: MatchType) {
 	let exp = '';
-	for (const [k, v] of trie.sub) {
+	const { c: sub } = trie;
+	for (const k in sub) {
 		exp += exp !== '' ? `|${k}` : k;
-		exp += trieToRegExRecursive(v as Trie, matchType);
+		exp += trieToRegExRecursive(sub[k] as Trie, matchType);
 	}
 
 	return exp !== '' ? `(?:${exp}${getEnd(matchType)})` : '';
 }
 
 function getRegEx(trie: Trie<unknown>, matchType: MatchType) {
-	if (trie.$synonymTrie) {
+	if (trie.s) {
 		throw new TypeError('TrieRegEx does not support tries with synonyms yet');
 	}
 
