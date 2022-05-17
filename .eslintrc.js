@@ -78,13 +78,7 @@ module.exports = {
     'no-invalid-regexp': 'error',
     'no-invalid-this': 'off',
     'no-magic-numbers': 'off',
-    '@typescript-eslint/no-magic-numbers': [
-      'error',
-      {
-        ignore: [0, 1, -1],
-        ignoreEnums: true
-      },
-    ],
+    '@typescript-eslint/no-magic-numbers': 'off',
     'no-multiple-empty-lines': [
       'error',
       {

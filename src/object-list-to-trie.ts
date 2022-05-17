@@ -9,6 +9,7 @@ export function objectListToTrie<TValue extends object>(
 ) {
 	const parameters = processCharSynonyms(synonyms || [], reservedWords);
 	const trie = createEmptyTrie(parameters);
+	trie.s![3] = 1;
 
 	for (const item of list) {
 		addObject(trie, item);

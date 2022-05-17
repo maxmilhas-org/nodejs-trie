@@ -2,6 +2,15 @@ import { TrieOptions } from './types';
 
 const removeSpecialCharactersAndAccents = /([\u0300-\u036f]|[^0-9A-Za-z])/g;
 
+export function toInsensitiveString(s: string) {
+	s = s.toLowerCase();
+	s = s
+		.toLowerCase()
+		.normalize('NFD')
+		.replace(removeSpecialCharactersAndAccents, '');
+	return s;
+}
+
 export function getTransformString(
 	options: TrieOptions = {},
 ): (s: string) => string {
@@ -10,11 +19,7 @@ export function getTransformString(
 	const minSize = options.minSize || 0;
 
 	return (s: string) => {
-		s = s.toLowerCase();
-		s = s
-			.toLowerCase()
-			.normalize('NFD')
-			.replace(removeSpecialCharactersAndAccents, '');
+		s = toInsensitiveString(s);
 
 		if (forbiddenWords.has(s) || visited.has(s) || s.length < minSize) {
 			return '';
