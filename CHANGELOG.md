@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.3.1...v1.4.0) (2022-05-17)
+
+
+### Features
+
+* implementing multiple prefixes iteration ([#8](https://github.com/maxmilhas-org/nodejs-trie/issues/8)) ([c6cd355](https://github.com/maxmilhas-org/nodejs-trie/commit/c6cd355044f9e0275548a3b123821bf957068776))
+
 ## [1.3.1](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.3.0...v1.3.1) (2022-05-13)
 
 
