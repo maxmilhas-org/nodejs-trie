@@ -123,15 +123,71 @@ for (const item of iterateTrieValues(trie, 'tes')) {
   console.log(item);
 }
 /*
-Result: will print in some arbitrary order
-{ proximity: 4, word: 'testing', value: 1 },
-{ proximity: 3, word: 'tester', value: 4 },
-{ proximity: 1, word: 'test', value: 5 },
-{ proximity: 4, word: 'testing', value: 5 },
+Result: will print in proximity order
+{ proximity: 1, value: 5 },
+{ proximity: 3, value: 4 },
+{ proximity: 4, value: 1 },
+{ proximity: 4, value: 5 },
 */
 ```
 
-Notice that **IterateTrieValues** will yield even repeated values. If you want uniqueness, it's up to you to treat the data as you need.
+Notice that **IterateTrieValues** will yield even repeated values. If you want uniqueness, you can inform it:
+
+```ts
+const trie = createTrieMap([
+  ['testing', 1],
+  ['taste', 2],
+  ['thirsty', 3],
+  ['tester', 4],
+  ['test', 5],
+  ['taste', 6],
+  ['thirsty', 7],
+  ['testing', 5],
+]);
+
+for (const item of iterateTrieValues(trie, {
+  prefixes: 'tes',
+  uniqueness: true,
+)) {
+  console.log(item);
+}
+/*
+Result: will print in proximity order
+{ proximity: 1, value: 5 },
+{ proximity: 3, value: 4 },
+{ proximity: 4, value: 1 },
+*/
+```
+
+You can also inform multiple prefixes and you'll get an iterable with only the values found for all of them.
+Notice that this feature implies uniqueness, and if you try to use it with uniqueness false, you'll get an error.
+Also, the proximity in the case will be the average proximity for the value with all the prefixes, and you have
+no guarantees that the items will be printed in proximity order.
+
+```ts
+const trie = createTrieMap([
+  ['testing', 1],
+  ['taste', 2],
+  ['thirsty', 3],
+  ['testing', 4],
+  ['test', 2],
+  ['tas', 4],
+  ['thirsty', 7],
+  ['testing', 5],
+]);
+
+for (const item of iterateTrieValues(trie, {
+  prefixes: ['tes', 'tas'],
+)) {
+  console.log(item);
+}
+
+/*
+Result: will print in some arbitrary order
+{ proximity: 1.5, value: 2 },
+{ proximity: 2, value: 4 },
+*/
+```
 
 ## License
 

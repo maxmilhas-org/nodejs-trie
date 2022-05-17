@@ -1,19 +1,4 @@
-import {
-	Letter,
-	Trie,
-	MatchType,
-	TrieRegExp,
-	ProcessedSynonyms,
-	IteratedTrieValue,
-	ReservedWords,
-} from './types';
-
-const RESERVED_WORDS = new Set<string>();
-for (const key in ReservedWords) {
-	if (ReservedWords.hasOwnProperty(key)) {
-		RESERVED_WORDS.add(key);
-	}
-}
+import { Trie, MatchType, ProcessedSynonyms } from './types';
 
 function getLastPerfectMatch(
 	processedSynonyms: ProcessedSynonyms | undefined,
@@ -27,10 +12,10 @@ function getLastPerfectMatch(
 		const { length } = word;
 
 		for (let i = context.i; i < length; i++) {
-			current = current[word[i] as Letter] as Trie;
+			current = current.c[word[i]] as Trie;
 			if (!current) {
 				break;
-			} else if (current.$word) {
+			} else if (current.w) {
 				lastIndex = i + 1;
 			}
 		}
@@ -52,7 +37,7 @@ function selfReferenceSynonyms(
 		if (synonyms) {
 			synonyms.forEach((synonym) => {
 				if (synonym !== char) {
-					current[synonym as Letter] = char;
+					current.c[synonym] = char;
 				}
 			});
 		}
@@ -62,35 +47,37 @@ function selfReferenceSynonyms(
 export function addWord(trie: Trie, word: string, value?: unknown) {
 	let current = trie;
 	const context = { i: 0, char: '' };
-	const synonymTrie = trie.$synonymTrie;
+	const synonymTrie = trie.s;
 
 	while (context.i < word.length) {
 		context.char = word[context.i];
 		getLastPerfectMatch(synonymTrie, word, context);
 		const { char } = context;
-		let node = current[char as Letter];
+		const { c: sub } = current;
+		let node = sub[char];
 		if (!node) {
-			node = current[char as Letter] = {};
+			node = { c: {} };
+			sub[char] = node;
 			selfReferenceSynonyms(synonymTrie, char, current);
 		} else if (typeof node === 'string') {
-			node = current[node as Letter] as Trie;
+			node = sub[node] as Trie;
 		}
 		current = node;
 		context.i++;
 	}
-	current.$word = word;
+	current.w = 1;
 	if (value !== undefined) {
-		if (!current.$values) {
-			current.$values = [];
+		if (!current.v) {
+			current.v = [];
 		}
-		current.$values.push(value);
+		current.v.push(value);
 	}
 }
 
 export function createEmptyTrie<TValue = never>(
 	synonymTrie?: [Trie, Map<string, string[]>],
 ): Trie<TValue> {
-	return { $synonymTrie: synonymTrie };
+	return { s: synonymTrie, c: {} };
 }
 
 export function createTrie(
@@ -119,39 +106,22 @@ export function createTrieMap<TValue>(
 	return trie;
 }
 
-function pushToStack<TValue>(
-	current: Trie<TValue>,
-	visited: Set<Trie<TValue>>,
-	stack: [Trie<TValue>, number][],
-	proximity: number,
-) {
-	for (const k in current) {
-		if (!RESERVED_WORDS.has(k)) {
-			const value = current[k as Letter]!;
-			if (typeof value !== 'string' && !visited.has(value)) {
-				visited.add(current);
-				stack.push([value, proximity]);
-			}
-		}
-	}
-}
-
 export function getSubTrie<TValue>(word: string, trie: Trie<TValue>) {
 	let current = trie;
 	const { length } = word;
 	const context = { i: 0, char: '' };
-	const synonymTrie = trie.$synonymTrie;
+	const synonymTrie = trie.s;
 
 	while (context.i < length) {
 		context.char = word[context.i];
 		getLastPerfectMatch(synonymTrie, word, context);
 
-		const nextNode = current[context.char as Letter];
+		const nextNode = current.c[context.char];
 		if (!nextNode) return undefined;
 
 		current =
 			typeof nextNode === 'string'
-				? (current[nextNode as Letter] as Trie<TValue>)
+				? (current.c[nextNode] as Trie<TValue>)
 				: nextNode;
 		context.i++;
 	}
@@ -159,44 +129,15 @@ export function getSubTrie<TValue>(word: string, trie: Trie<TValue>) {
 	return current;
 }
 
-export function* iterateTrieValues<TValue>(
-	trie: Trie<TValue>,
-	prefix?: string,
-): Iterable<IteratedTrieValue<TValue>> {
-	if (prefix) {
-		trie = getSubTrie(prefix, trie)!;
-		if (!trie) return;
-	}
-	const visited = new Set([trie]);
-	const stack: [Trie<TValue>, number][] = [[trie, 0]];
-
-	while (stack.length > 0) {
-		const [current, proximity] = stack.pop()!;
-		const word = current.$word;
-		const values = current.$values;
-		if (word && values) {
-			const { length } = values;
-			for (let i = 0; i < length; i++) {
-				const value = values[i];
-				yield { proximity, word, value };
-			}
-		}
-		pushToStack(current, visited, stack, proximity + 1);
-	}
-}
-
 export function processCharSynonyms(
 	synonymChars: string[][],
 ): ProcessedSynonyms {
 	const set = new Set<string>();
-	const trie: Trie = {};
+	const trie = createEmptyTrie();
 	const synonymMap = new Map<string, string[]>();
 
 	for (const synonyms of synonymChars) {
 		for (const synonym of synonyms) {
-			if (RESERVED_WORDS.has(synonym)) {
-				throw new Error(`The word ${synonym} is reserved!`);
-			}
 			if (set.has(synonym)) {
 				throw new Error(`Synonym ${synonym} informed more than once!`);
 			}
@@ -213,65 +154,5 @@ export function matchesTrie<TValue>(word: string, trie: Trie<TValue>) {
 	const result = getSubTrie(word, trie);
 	if (!result) return MatchType.NONE;
 
-	return result.$word ? MatchType.PERFECT : MatchType.PARTIAL;
-}
-
-function trieToRegExRecursive(trie: Trie, matchType: MatchType) {
-	let exp = '';
-	for (const k in trie) {
-		if (!RESERVED_WORDS.has(k)) {
-			exp += exp !== '' ? `|${k}` : k;
-			exp += trieToRegExRecursive(trie[k as Letter] as Trie, matchType);
-		}
-	}
-
-	return exp !== ''
-		? `(?:${exp}${
-				matchType === MatchType.PERFECT
-					? ''
-					: matchType === MatchType.PARTIAL
-					? '|$'
-					: '|\n'
-		  })`
-		: '';
-}
-
-function validateRegEx(trie: Trie) {
-	if (trie.$synonymTrie) {
-		throw new TypeError('TrieRegEx does not support tries with synonyms yet');
-	}
-}
-
-export function trieToRegExPartial(trie: Trie) {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.PARTIAL)}`;
-	return new RegExp(exp);
-}
-
-export function trieToRegExPerfect(trie: Trie) {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.PERFECT)}`;
-	return new RegExp(exp);
-}
-
-export function trieToRegEx(trie: Trie): TrieRegExp {
-	validateRegEx(trie);
-
-	const exp = `^${trieToRegExRecursive(trie, MatchType.NONE)}`;
-	const regex = new RegExp(exp) as TrieRegExp;
-
-	regex.match = (text: string) => {
-		const result = regex.exec(`${text}\n`);
-		if (!result) {
-			return MatchType.NONE;
-		}
-		const match = result[0];
-		return match[match.length - 1] === '\n'
-			? MatchType.PARTIAL
-			: MatchType.PERFECT;
-	};
-
-	return regex;
+	return result.w ? MatchType.PERFECT : MatchType.PARTIAL;
 }
