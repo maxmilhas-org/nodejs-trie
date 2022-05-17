@@ -2,13 +2,11 @@ import { TrieOptions } from './types';
 
 const removeSpecialCharactersAndAccents = /([\u0300-\u036f]|[^0-9A-Za-z])/g;
 
-export function toInsensitiveString(s: string) {
-	s = s.toLowerCase();
-	s = s
+export function toInsensitiveString(str: string) {
+	return str
 		.toLowerCase()
 		.normalize('NFD')
 		.replace(removeSpecialCharactersAndAccents, '');
-	return s;
 }
 
 export function getTransformString(
