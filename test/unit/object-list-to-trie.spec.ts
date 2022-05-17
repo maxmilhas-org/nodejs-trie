@@ -17,29 +17,34 @@ describe(objectListToTrie.name, () => {
 	it('Should convert an object list to a TrieMap', () => {
 		const result = objectListToTrie([obj1, obj2, obj3, obj4]);
 
-		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 1],
+		function getLeaf(obj: any) {
+			return { c: {}, w: 1, v: [obj] };
+		}
+		const firstSubTrie = {
 			c: {
-				s: {
-					c: {
-						o: {
-							c: { m: { c: { e: { c: {}, w: 1, v: [obj2] } } } },
-						},
-					},
+				o: {
+					c: { m: { c: { e: getLeaf(obj2) } } },
 				},
-				t: {
+			},
+		};
+		const secondSubTrie = {
+			c: {
+				h: {
 					c: {
-						h: {
+						i: {
 							c: {
-								i: {
-									c: {
-										n: { c: { g: { c: {}, w: 1, v: [obj4] } } },
-									},
-								},
+								n: { c: { g: getLeaf(obj4) } },
 							},
 						},
 					},
 				},
+			},
+		};
+		expect(result).toEqual({
+			s: [{ c: {} }, new Map(), undefined, 1],
+			c: {
+				s: firstSubTrie,
+				t: secondSubTrie,
 			},
 		});
 	});

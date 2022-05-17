@@ -50,16 +50,20 @@ describe(streamToTrie.name, () => {
 		});
 		emitter.emit('data', obj3);
 		await delay(1);
+		function getLeaf(obj: any) {
+			return { c: {}, w: 1, v: [obj] };
+		}
+		const firstSubTrie = {
+			c: {
+				o: {
+					c: { m: { c: { e: getLeaf(obj2) } } },
+				},
+			},
+		};
 		expect(result).toEqual({
 			s: [{ c: {} }, new Map(), undefined, 0],
 			c: {
-				s: {
-					c: {
-						o: {
-							c: { m: { c: { e: { c: {}, w: 1, v: [obj2] } } } },
-						},
-					},
-				},
+				s: firstSubTrie,
 			},
 		});
 		emitter.emit('data', obj4);
@@ -67,20 +71,14 @@ describe(streamToTrie.name, () => {
 		expect(result).toEqual({
 			s: [{ c: {} }, new Map(), undefined, 0],
 			c: {
-				s: {
-					c: {
-						o: {
-							c: { m: { c: { e: { c: {}, w: 1, v: [obj2] } } } },
-						},
-					},
-				},
+				s: firstSubTrie,
 				t: {
 					c: {
 						h: {
 							c: {
 								i: {
 									c: {
-										n: { c: { g: { c: {}, w: 1, v: [obj4] } } },
+										n: { c: { g: getLeaf(obj4) } },
 									},
 								},
 							},
