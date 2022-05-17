@@ -43,12 +43,12 @@ function getPrefixTrie(
 }
 
 function treatOptions<TValue>(
-	prefixOrPrefix: IteratingOptions<TValue>,
+	options: IteratingOptions<TValue>,
 	trie: Trie<TValue>,
 ) {
-	const [prefixes, count] = getPrefixTrie(prefixOrPrefix.prefixes, trie);
-	let uniqueness = prefixOrPrefix.uniqueness;
-	const getId = prefixOrPrefix.getId;
+	const [prefixes, count] = getPrefixTrie(options.prefixes, trie);
+	let uniqueness = options.uniqueness;
+	const getId = options.getId;
 
 	if (prefixes) {
 		const manyPrefixes = count > 1;
@@ -64,15 +64,15 @@ function treatOptions<TValue>(
 }
 
 function validateIterationParameters<TValue>(
-	prefixOrPrefix: string | IteratingOptions<TValue> | undefined,
+	prefixOrOptions: string | IteratingOptions<TValue> | undefined,
 	trie: Trie<TValue>,
 ) {
 	let prefixes: Trie | undefined;
-	if (prefixOrPrefix) {
-		if (typeof prefixOrPrefix === 'object') {
-			return treatOptions(prefixOrPrefix, trie);
+	if (prefixOrOptions) {
+		if (typeof prefixOrOptions === 'object') {
+			return treatOptions(prefixOrOptions, trie);
 		}
-		prefixes = createTrie([prefixOrPrefix], trie.s);
+		prefixes = createTrie([prefixOrOptions], trie.s);
 	}
 
 	return { prefixes, uniqueness: false, getId: identity };
@@ -215,10 +215,10 @@ export function iterateTrieValues<TValue>(
 ): Iterable<IteratedTrieValue<TValue>>;
 export function* iterateTrieValues<TValue>(
 	trie: Trie<TValue>,
-	prefixOrPrefix?: IteratingOptions<TValue> | string,
+	prefixOrOptions?: IteratingOptions<TValue> | string,
 ): Iterable<IteratedTrieValue<TValue>> {
 	const { prefixes, uniqueness, getId } = validateIterationParameters(
-		prefixOrPrefix,
+		prefixOrOptions,
 		trie,
 	);
 	let tries: Array<Trie<TValue> | undefined> = [trie];
