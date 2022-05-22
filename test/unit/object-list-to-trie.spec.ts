@@ -14,33 +14,33 @@ describe(objectListToTrie.name, () => {
 	const obj4 = {
 		field1: 'thing',
 	};
-
-	it('Should convert an object list to a total insensitive TrieMap, when no options is informed', () => {
-		const result = objectListToTrie([obj1, obj2, obj3, obj4]);
-
-		function getLeaf(obj: any) {
-			return { c: {}, w: 1, v: new StringifiableSet([obj]) };
-		}
-		const firstSubTrie = {
-			c: {
-				o: {
-					c: { m: { c: { e: getLeaf(obj2) } } },
-				},
+	function getLeaf(obj: any) {
+		return { c: {}, w: 1, v: new StringifiableSet([obj]) };
+	}
+	const firstSubTrie = {
+		c: {
+			o: {
+				c: { m: { c: { e: getLeaf(obj2) } } },
 			},
-		};
-		const secondSubTrie = {
-			c: {
-				h: {
-					c: {
-						i: {
-							c: {
-								n: { c: { g: getLeaf(obj4) } },
-							},
+		},
+	};
+	const secondSubTrie = {
+		c: {
+			h: {
+				c: {
+					i: {
+						c: {
+							n: { c: { g: getLeaf(obj4) } },
 						},
 					},
 				},
 			},
-		};
+		},
+	};
+
+	it('Should convert an object list to a total insensitive TrieMap, when no options is informed', () => {
+		const result = objectListToTrie([obj1, obj2, obj3, obj4]);
+
 		expect(result).toEqual({
 			s: [
 				{ c: {} },
@@ -63,29 +63,6 @@ describe(objectListToTrie.name, () => {
 			onlyAlphaNumerics: false,
 		});
 
-		function getLeaf(obj: any) {
-			return { c: {}, w: 1, v: new StringifiableSet([obj]) };
-		}
-		const firstSubTrie = {
-			c: {
-				o: {
-					c: { m: { c: { e: getLeaf(obj2) } } },
-				},
-			},
-		};
-		const secondSubTrie = {
-			c: {
-				h: {
-					c: {
-						i: {
-							c: {
-								n: { c: { g: getLeaf(obj4) } },
-							},
-						},
-					},
-				},
-			},
-		};
 		expect(result).toEqual({
 			s: [
 				{ c: {} },
