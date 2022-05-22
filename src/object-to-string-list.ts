@@ -1,5 +1,5 @@
-import { getTransformString } from './get-transform-string';
 import { getStringList } from './get-string-list';
+import { transformUniqueStringFactory } from './get-transform-string';
 import { TrieOptions } from './types';
 
 function* resolveValue<TValue>(
@@ -38,7 +38,7 @@ export function* objectToStringList<TValue extends object>(
 	if (!options) {
 		options = {};
 	}
-	const transform = getTransformString(options);
+	const transform = transformUniqueStringFactory(options);
 
 	yield* iterate(object, transform);
 }

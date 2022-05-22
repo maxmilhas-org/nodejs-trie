@@ -1,4 +1,18 @@
+import { transformStringFactory } from './get-transform-string';
+import { StringifiableSet } from './stringifiable-set';
 import { Trie, MatchType, TrieParameters, TrieOptions } from './types';
+
+const transformMap = new WeakMap<Trie, (str: string) => string>();
+
+export function getTrieTransform(trie: Trie): (str: string) => string {
+	let transform = transformMap.get(trie);
+	if (!transform) {
+		transform = transformStringFactory(trie.s?.[2] || {});
+		transformMap.set(trie, transform);
+	}
+
+	return transform;
+}
 
 function getLastPerfectMatch(
 	processedSynonyms: TrieParameters | undefined,
@@ -48,6 +62,8 @@ export function addWord(trie: Trie, word: string, value?: unknown) {
 	let current = trie;
 	const context = { i: 0, char: '' };
 	const synonymTrie = trie.s;
+	const transform = getTrieTransform(trie);
+	word = transform(word);
 
 	while (context.i < word.length) {
 		context.char = word[context.i];
@@ -68,9 +84,11 @@ export function addWord(trie: Trie, word: string, value?: unknown) {
 	current.w = 1;
 	if (value !== undefined) {
 		if (!current.v) {
-			current.v = [];
+			current.v = new StringifiableSet();
+		} else if (Array.isArray(current.v)) {
+			current.v = new StringifiableSet(current.v);
 		}
-		current.v.push(value);
+		current.v.add(value);
 	}
 }
 
@@ -148,7 +166,7 @@ export function processCharSynonyms(
 		}
 	}
 
-	return [trie, synonymMap, options, 0];
+	return [trie, synonymMap, options];
 }
 
 export function matchesTrie<TValue>(word: string, trie: Trie<TValue>) {

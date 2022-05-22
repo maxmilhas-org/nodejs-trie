@@ -1,3 +1,4 @@
+import { StringifiableSet } from './../../src/stringifiable-set';
 import { iterateTrieValues, objectListToTrie } from '../../src';
 
 describe(objectListToTrie.name, () => {
@@ -18,7 +19,7 @@ describe(objectListToTrie.name, () => {
 		const result = objectListToTrie([obj1, obj2, obj3, obj4]);
 
 		function getLeaf(obj: any) {
-			return { c: {}, w: 1, v: [obj] };
+			return { c: {}, w: 1, v: new StringifiableSet([obj]) };
 		}
 		const firstSubTrie = {
 			c: {
@@ -41,7 +42,7 @@ describe(objectListToTrie.name, () => {
 			},
 		};
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 1],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {
 				s: firstSubTrie,
 				t: secondSubTrie,
@@ -50,8 +51,11 @@ describe(objectListToTrie.name, () => {
 	});
 
 	it('Should iterate using case insensitivity over a Trie created with objetListToTrie', () => {
-		const trie = objectListToTrie([obj1, obj2, obj3, obj4]);
-		const iterable = iterateTrieValues(trie, 'Thing');
+		const trie = objectListToTrie([obj1, obj2, obj3, obj4], undefined, {
+			onlyAlphaNumerics: true,
+			caseInsensitive: true,
+		});
+		const iterable = iterateTrieValues(trie, 'Thíng');
 		const result = Array.from(iterable);
 
 		expect(result).toEqual([

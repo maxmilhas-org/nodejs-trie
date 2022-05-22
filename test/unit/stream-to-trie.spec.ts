@@ -1,4 +1,4 @@
-import { streamToTrie } from '../../src';
+import { streamToTrie, StringifiableSet } from '../../src';
 import { EventEmitter } from 'events';
 import { fluentEmit } from '@codibre/fluent-iterable';
 import { promisify } from 'util';
@@ -25,24 +25,28 @@ describe(streamToTrie.name, () => {
 		const result = streamToTrie(stream);
 
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 0],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {},
 		});
 		emitter.emit('data', obj1);
 		await delay(1);
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 0],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {},
 		});
 		emitter.emit('data', obj2);
 		await delay(1);
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 0],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {
 				s: {
 					c: {
 						o: {
-							c: { m: { c: { e: { c: {}, w: 1, v: [obj2] } } } },
+							c: {
+								m: {
+									c: { e: { c: {}, w: 1, v: new StringifiableSet([obj2]) } },
+								},
+							},
 						},
 					},
 				},
@@ -51,7 +55,7 @@ describe(streamToTrie.name, () => {
 		emitter.emit('data', obj3);
 		await delay(1);
 		function getLeaf(obj: any) {
-			return { c: {}, w: 1, v: [obj] };
+			return { c: {}, w: 1, v: new StringifiableSet([obj]) };
 		}
 		const firstSubTrie = {
 			c: {
@@ -61,7 +65,7 @@ describe(streamToTrie.name, () => {
 			},
 		};
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 0],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {
 				s: firstSubTrie,
 			},
@@ -69,7 +73,7 @@ describe(streamToTrie.name, () => {
 		emitter.emit('data', obj4);
 		await delay(1);
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined, 0],
+			s: [{ c: {} }, new Map(), undefined],
 			c: {
 				s: firstSubTrie,
 				t: {

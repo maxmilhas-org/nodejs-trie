@@ -5,11 +5,10 @@ import { addObject } from './add-object';
 export function objectListToTrie<TValue extends object>(
 	list: Iterable<TValue>,
 	synonyms?: string[][],
-	reservedWords?: TrieOptions,
+	options?: TrieOptions,
 ) {
-	const parameters = processCharSynonyms(synonyms || [], reservedWords);
+	const parameters = processCharSynonyms(synonyms || [], options);
 	const trie = createEmptyTrie(parameters);
-	trie.s![3] = 1;
 
 	for (const item of list) {
 		addObject(trie, item);

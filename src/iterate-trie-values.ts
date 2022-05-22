@@ -1,12 +1,9 @@
 import { Queue, ShouldYield, IdItem, getQueue } from './utils';
-import { addWord, createEmptyTrie, createTrie } from './trie';
+import { addWord, createEmptyTrie, createTrie, getTrieTransform } from './trie';
 import { IteratedTrieValue, IteratingOptions, Trie } from './types';
 import { getStringList } from './get-string-list';
-import { getTransformString } from './get-transform-string';
 
 const YIELDS_TRUE = { yields: true, id: undefined };
-const INSENSITIVE_TRIE = 3;
-const TRIE_OPTIONS = 2;
 const ALWAYS_YIELDS = () => YIELDS_TRUE;
 
 function pushToStack<TValue>(
@@ -15,9 +12,9 @@ function pushToStack<TValue>(
 	stack: Queue<[Trie<TValue>, number]>,
 	proximity: number,
 ) {
-	const { c: sub } = current;
+	const { c } = current;
 	for (const k in current.c) {
-		const value = sub[k]!;
+		const value = c[k]!;
 		if (typeof value !== 'string' && !visited.has(value)) {
 			visited.add(current);
 			stack.push([value, proximity]);
@@ -72,9 +69,8 @@ function getPrefixList<TValue>(
 	prefix: string,
 ): Iterable<string> {
 	const arr = [prefix];
-	return trie.s?.[INSENSITIVE_TRIE]
-		? getStringList(arr, getTransformString(trie.s[TRIE_OPTIONS]))
-		: arr;
+	const transform = getTrieTransform(trie);
+	return getStringList(arr, transform);
 }
 
 function validateIterationParameters<TValue>(
@@ -111,12 +107,10 @@ function shouldYieldFactory(
 
 function* yieldValues<TValue>(
 	shouldYield: ShouldYield,
-	values: TValue[],
+	values: Iterable<TValue>,
 	proximity: number,
 ) {
-	const { length } = values;
-	for (let i = 0; i < length; i++) {
-		const value = values[i];
+	for (const value of values) {
 		const { yields, id } = shouldYield(value);
 		if (yields) {
 			yield { proximity, value, id, count: 1 };

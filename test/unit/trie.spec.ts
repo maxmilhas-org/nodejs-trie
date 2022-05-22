@@ -1,7 +1,81 @@
+import { StringifiableSet } from './../../src/stringifiable-set';
 import { MatchType } from './../../src/types';
-import { createTrie, matchesTrie, processCharSynonyms } from '../../src';
+import {
+	addWord,
+	createTrie,
+	createTrieMap,
+	matchesTrie,
+	processCharSynonyms,
+} from '../../src';
 
 describe('trie', () => {
+	it('simple Trie should be stringifiable', () => {
+		const trie = createTrie(['testing', 'taste', 'thirsty']);
+
+		const result = JSON.stringify(trie);
+
+		expect(result).toBe(
+			'{"c":{"t":{"c":{"e":{"c":{"s":{"c":{"t":{"c":{"i":{"c":{"n":{"c":{"g":{"c":{},"w":1}}}}}}}}}}},"a":{"c":{"s":{"c":{"t":{"c":{"e":{"c":{},"w":1}}}}}}},"h":{"c":{"i":{"c":{"r":{"c":{"s":{"c":{"t":{"c":{"y":{"c":{},"w":1}}}}}}}}}}}}}}}',
+		);
+	});
+
+	it('simple Trie should be restorable from a stringified value', () => {
+		const trie = createTrie(['testing', 'taste', 'thirsty']);
+		const stringified = JSON.stringify(trie);
+
+		const result = JSON.parse(stringified);
+
+		expect(result).toEqual(trie);
+	});
+
+	it('TrieMap should be stringifiable', () => {
+		const trie = createTrieMap([['test', 1]]);
+
+		const result = JSON.stringify(trie);
+
+		expect(result).toBe(
+			'{"c":{"t":{"c":{"e":{"c":{"s":{"c":{"t":{"c":{},"w":1,"v":[1]}}}}}}}}}',
+		);
+	});
+
+	it('TrieMap should be restorable from a stringified value', () => {
+		const trie = createTrieMap([['test', 1]]);
+		const stringified = JSON.stringify(trie);
+
+		const result = JSON.parse(stringified);
+
+		expect(result).toEqual({
+			c: {
+				t: { c: { e: { c: { s: { c: { t: { c: {}, w: 1, v: [1] } } } } } } },
+			},
+		});
+	});
+
+	it('TrieMap should be functional after restored from a stringified value', () => {
+		const trie = createTrieMap([['test', 1]]);
+		const stringified = JSON.stringify(trie);
+		const restoredTrie = JSON.parse(stringified);
+
+		const result = addWord(restoredTrie, 'test', 2);
+
+		expect(restoredTrie).toEqual({
+			c: {
+				t: {
+					c: {
+						e: {
+							c: {
+								s: {
+									c: { t: { c: {}, w: 1, v: new StringifiableSet([1, 2]) } },
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+		expect(result).toBeUndefined();
+	});
+
 	describe(matchesTrie.name, () => {
 		it('should return MatchType.NONE when there is no matching string', () => {
 			const trie = createTrie(['testing', 'taste', 'thirsty']);

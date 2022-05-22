@@ -1,3 +1,4 @@
+import { StringifiableSet } from './../../src/stringifiable-set';
 import { createEmptyTrie, processCharSynonyms } from '../../src';
 import { addObject } from '../../src/add-object';
 
@@ -16,7 +17,11 @@ describe(addObject.name, () => {
 				s: {
 					c: {
 						o: {
-							c: { m: { c: { e: { c: {}, w: 1, v: [obj1] } } } },
+							c: {
+								m: {
+									c: { e: { c: {}, w: 1, v: new StringifiableSet([obj1]) } },
+								},
+							},
 						},
 					},
 				},
@@ -45,13 +50,22 @@ describe(addObject.name, () => {
 				{
 					forbiddenWords: ['some'],
 				},
-				0,
 			],
 			c: {
 				t: {
 					c: {
 						h: {
-							c: { i: { c: { n: { c: { g: { c: {}, w: 1, v: [obj1] } } } } } },
+							c: {
+								i: {
+									c: {
+										n: {
+											c: {
+												g: { c: {}, w: 1, v: new StringifiableSet([obj1]) },
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},

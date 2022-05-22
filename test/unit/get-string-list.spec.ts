@@ -14,14 +14,19 @@ describe(getStringList.name, () => {
 			'[what]',
 			'[a]',
 			'[mess]',
+			'[!!]',
 			'[That]',
 			'[string]',
 			'[totally]',
+			'[*]',
 			'[screwed]',
+			'[!]',
 			'[That]',
+			"[']",
 			'[s]',
 			'[for]',
 			'[sure]',
+			'[:(]',
 		]);
 	});
 });
