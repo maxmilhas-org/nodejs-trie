@@ -207,8 +207,20 @@ const trie = objectListToTrie(myList, {
 });
 ```
 
-Tries generated with that method are case insensitive and accent insensitive too, and any nonalphanumeric character is ignored.
+Tries generated with that method are case insensitive and accent insensitive too, and any non-alphanumeric character is ignored.
 Given that, the searches you do over that Trie will also follow the same rules.
+If, for any reason, you need a case sensitive Trie, or a Trie that consider non-alphanumeric characters, you can specify so like this:
+
+```ts
+const trie = objectListToTrie(myList, {
+  minSize: 4, //Will only include in the Trie words with 4 or more characters,
+  forbiddenWords: ['something', 'denied'], //Will Ignore those words when filling up the Trie
+  {
+    caseInsensitive: false,
+    onlyAlphaNumerics: false,
+  }
+});
+```
 
 ## License
 

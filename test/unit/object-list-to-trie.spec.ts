@@ -15,7 +15,7 @@ describe(objectListToTrie.name, () => {
 		field1: 'thing',
 	};
 
-	it('Should convert an object list to a TrieMap', () => {
+	it('Should convert an object list to a total insensitive TrieMap, when no options is informed', () => {
 		const result = objectListToTrie([obj1, obj2, obj3, obj4]);
 
 		function getLeaf(obj: any) {
@@ -42,7 +42,59 @@ describe(objectListToTrie.name, () => {
 			},
 		};
 		expect(result).toEqual({
-			s: [{ c: {} }, new Map(), undefined],
+			s: [
+				{ c: {} },
+				new Map(),
+				{
+					caseInsensitive: true,
+					onlyAlphaNumerics: true,
+				},
+			],
+			c: {
+				s: firstSubTrie,
+				t: secondSubTrie,
+			},
+		});
+	});
+
+	it('Should convert an object list to a TrieMap with the specified word restrictions, when caseInsensitive and onlyAlphaNumerics are informed', () => {
+		const result = objectListToTrie([obj1, obj2, obj3, obj4], undefined, {
+			caseInsensitive: false,
+			onlyAlphaNumerics: false,
+		});
+
+		function getLeaf(obj: any) {
+			return { c: {}, w: 1, v: new StringifiableSet([obj]) };
+		}
+		const firstSubTrie = {
+			c: {
+				o: {
+					c: { m: { c: { e: getLeaf(obj2) } } },
+				},
+			},
+		};
+		const secondSubTrie = {
+			c: {
+				h: {
+					c: {
+						i: {
+							c: {
+								n: { c: { g: getLeaf(obj4) } },
+							},
+						},
+					},
+				},
+			},
+		};
+		expect(result).toEqual({
+			s: [
+				{ c: {} },
+				new Map(),
+				{
+					caseInsensitive: false,
+					onlyAlphaNumerics: false,
+				},
+			],
 			c: {
 				s: firstSubTrie,
 				t: secondSubTrie,
@@ -51,10 +103,7 @@ describe(objectListToTrie.name, () => {
 	});
 
 	it('Should iterate using case insensitivity over a Trie created with objetListToTrie', () => {
-		const trie = objectListToTrie([obj1, obj2, obj3, obj4], undefined, {
-			onlyAlphaNumerics: true,
-			caseInsensitive: true,
-		});
+		const trie = objectListToTrie([obj1, obj2, obj3, obj4], undefined);
 		const iterable = iterateTrieValues(trie, 'Thíng');
 		const result = Array.from(iterable);
 
