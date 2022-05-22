@@ -3,11 +3,12 @@ import { StringifiableSet } from './stringifiable-set';
 import { Trie, MatchType, TrieParameters, TrieOptions } from './types';
 
 const transformMap = new WeakMap<Trie, (str: string) => string>();
+const OPTIONS_PARAM = 2;
 
 export function getTrieTransform(trie: Trie): (str: string) => string {
 	let transform = transformMap.get(trie);
 	if (!transform) {
-		transform = transformStringFactory(trie.s?.[2] || {});
+		transform = transformStringFactory(trie.s?.[OPTIONS_PARAM] || {});
 		transformMap.set(trie, transform);
 	}
 
