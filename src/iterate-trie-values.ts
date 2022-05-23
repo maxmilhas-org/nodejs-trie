@@ -1,6 +1,7 @@
 import { Queue, ShouldYield, IdItem, getQueue } from './utils';
-import { addWord, createEmptyTrie, createTrie } from './trie';
+import { addWord, createEmptyTrie, createTrie, getTrieTransform } from './trie';
 import { IteratedTrieValue, IteratingOptions, Trie } from './types';
+import { getStringList } from './get-string-list';
 
 const YIELDS_TRUE = { yields: true, id: undefined };
 const ALWAYS_YIELDS = () => YIELDS_TRUE;
@@ -11,9 +12,9 @@ function pushToStack<TValue>(
 	stack: Queue<[Trie<TValue>, number]>,
 	proximity: number,
 ) {
-	const { c: sub } = current;
+	const { c } = current;
 	for (const k in current.c) {
-		const value = sub[k]!;
+		const value = c[k]!;
 		if (typeof value !== 'string' && !visited.has(value)) {
 			visited.add(current);
 			stack.push([value, proximity]);
@@ -63,6 +64,15 @@ function treatOptions<TValue>(
 	return { prefixes, uniqueness, getId: getId || identity };
 }
 
+function getPrefixList<TValue>(
+	trie: Trie<TValue>,
+	prefix: string,
+): Iterable<string> {
+	const arr = [prefix];
+	const transform = getTrieTransform(trie);
+	return getStringList(arr, transform);
+}
+
 function validateIterationParameters<TValue>(
 	prefixOrOptions: string | IteratingOptions<TValue> | undefined,
 	trie: Trie<TValue>,
@@ -72,7 +82,7 @@ function validateIterationParameters<TValue>(
 		if (typeof prefixOrOptions === 'object') {
 			return treatOptions(prefixOrOptions, trie);
 		}
-		prefixes = createTrie([prefixOrOptions], trie.s);
+		prefixes = createTrie(getPrefixList<TValue>(trie, prefixOrOptions), trie.s);
 	}
 
 	return { prefixes, uniqueness: false, getId: identity };
@@ -97,12 +107,10 @@ function shouldYieldFactory(
 
 function* yieldValues<TValue>(
 	shouldYield: ShouldYield,
-	values: TValue[],
+	values: Iterable<TValue>,
 	proximity: number,
 ) {
-	const { length } = values;
-	for (let i = 0; i < length; i++) {
-		const value = values[i];
+	for (const value of values) {
 		const { yields, id } = shouldYield(value);
 		if (yields) {
 			yield { proximity, value, id, count: 1 };

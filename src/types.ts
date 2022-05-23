@@ -1,10 +1,23 @@
-export type ProcessedSynonyms = [Trie, Map<string, string[]>];
+import { StringifiableSet } from './stringifiable-set';
+
+export interface TrieOptions {
+	forbiddenWords?: string[];
+	minSize?: number;
+	caseInsensitive?: boolean;
+	onlyAlphaNumerics?: boolean;
+}
+
+export type TrieParameters = [
+	Trie,
+	Map<string, string[]>,
+	TrieOptions | undefined,
+];
 
 export interface Trie<TValue = unknown> {
 	c: Record<string, Trie<TValue> | string | undefined>;
 	w?: 1;
-	s?: ProcessedSynonyms;
-	v?: TValue[];
+	s?: TrieParameters;
+	v?: TValue[] | StringifiableSet<TValue>;
 }
 
 export interface IteratingOptions<TValue> {

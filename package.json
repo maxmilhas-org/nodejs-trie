@@ -71,6 +71,7 @@
   "license": "MIT",
   "devDependencies": {
     "@codibre/confs": "^1.1.2",
+    "@codibre/fluent-iterable": "^1.19.1",
     "@types/benchmark": "^2.1.1",
     "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^4.0.0",
@@ -81,6 +82,7 @@
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-unused-imports": "^1.0.0",
+    "for-emit-of": "^1.4.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-callslike": "^0.2.0",
