@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.4.0...v1.5.0) (2022-05-23)
+
+
+### Features
+
+* implementing object list to Trie feature ([5b82550](https://github.com/maxmilhas-org/nodejs-trie/commit/5b82550b1c8178bf8c3e53aaac02f942f90515e8))
+
 # [1.4.0](https://github.com/maxmilhas-org/nodejs-trie/compare/v1.3.1...v1.4.0) (2022-05-17)
 
 
