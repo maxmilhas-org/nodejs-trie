@@ -80,7 +80,7 @@ describe(objectListToTrie.name, () => {
 	});
 
 	it('Should iterate using case insensitivity over a Trie created with objetListToTrie', () => {
-		const trie = objectListToTrie([obj1, obj2, obj3, obj4], undefined);
+		const trie = objectListToTrie([obj1, obj2, obj3, obj4], []);
 		const iterable = iterateTrieValues(trie, 'Thíng');
 		const result = Array.from(iterable);
 
